@@ -2,7 +2,7 @@
 A horrible Structs bot
 
 ## Warning
-Expect to need a reboot after using this. It's got a messy and carefree attitube to process forking.
+Expect to need a reboot after using this. It's got a messy and carefree attitude to process forking.
 
 ## Requirements
 You'll need `jq` and `structsd`
