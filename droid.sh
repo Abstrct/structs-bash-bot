@@ -22,6 +22,7 @@ GUILD_LEADER_ACCOUNT_BLOB=`structsd keys show ${GUILD_LEADER_ACCOUNT} --output j
 GUILD_LEADER_ADDRESS=`echo ${GUILD_LEADER_ACCOUNT_BLOB} | jq -r ".address"`
 echo "[Guild Leader] Player Address: $GUILD_LEADER_ADDRESS"
 
+
 echo "Loading Guild Leader Player Account"
 GUILD_LEADER_PLAYER_BLOB=`structsd query structs show-player --address ${GUILD_LEADER_ADDRESS} --output json`
 
