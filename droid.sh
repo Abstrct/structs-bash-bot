@@ -2,11 +2,11 @@
 
 # What should be the player name prefix
 # read -r -e -p "Player Account Prefix:" -i "botplayer" PLAYER_ACCOUNT_PREFIX
-PLAYER_ACCOUNT_PREFIX="guildlbotplayer"
+PLAYER_ACCOUNT_PREFIX="guildlbotplayerr"
 
 # Minimum Alpha Amount to hold
 #read -r -e -p "Minimum Alpha to Hold:" -i "3" ALPHA_MINIMUM_HOLD
-ALPHA_MINIMUM_HOLD=300
+ALPHA_MINIMUM_HOLD=1000
 
 # Minimum Infusion Size
 #read -r -e -p "Minimum Infusion Size:" -i "5" ALPHA_MINIMUM_INFUSION
