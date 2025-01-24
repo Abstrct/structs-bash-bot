@@ -1,65 +1,30 @@
 #!/usr/bin/env bash
 
 PLAYER_ID=$1
-
 SLEEPER_LOG=60
 
 
+PLAYER_BLOB=$(psql $DATABASE_URL -c "SELECT to_json(player.*) FROM view.player WHERE player.player_id = '${PLAYER_ID}';" --no-align -t)
 
-# Minimum Alpha Amount to hold
-ALPHA_MINIMUM_HOLD=300
+PLAYER_GUILD_ID=$(echo ${PLAYER_BLOB} | jq -r ".guild_id")
+PLAYER_USERNAME=$(echo ${PLAYER_BLOB} | jq -r ".username")
+PLAYER_ADDRESS=$(echo ${PLAYER_BLOB} | jq -r ".primary_address")
+PLAYER_ROLE_ID=$(psql $DATABASE_URL -c "SELECT id FROM signer.role WHERE role.player_id = '${PLAYER_ID}';" --no-align -t)
 
-# Minimum Infusion Size
-ALPHA_MINIMUM_INFUSION=5
-
-SQUAD_LEADER_ROLE_ID=$()
-SQUAD_LEADER_PLAYER_ID=$()
-SQUAD_LEADER_GUILD_ID=$()
-SQUAD_LEADER_USERNAME=$()
-SQUAD_LEADER_ADDRESS=$()
-
-echo "[Squad Leader] PLAYER_ID(${SQUAD_LEADER_PLAYER_ID}) ROLE_ID(${SQUAD_LEADER_ROLE_ID})  GUILD_ID(${SQUAD_LEADER_GUILD_ID}) USERNAME(${SQUAD_LEADER_USERNAME}) ${SQUAD_LEADER_ADDRESS}"
-
-
-# "Loading Guild Details..."
-
-
-GUILD_ENTRY_SUBSTATION_ID=`echo ${GUILD_BLOB} | jq -r ".Guild.entrySubstationId"`
-
-GUILD_PRIMARY_REACTOR_ID=`echo ${GUILD_BLOB} | jq -r ".Guild.primaryReactorId"`
-GUILD_PRIMARY_REACTOR_ADDRESS=`echo ${REACTOR_BLOB} | jq -r ".Reactor.validator"`
-fuel | load | capacity |                       validator
-
-
-
-echo "[Squad Leader] Reactor ID: ${GUILD_REACTOR_ID}"
-echo "[Squad Leader] Reactor Address: ${GUILD_REACTOR_ADDRESS}"
-
-
-
-echo "[Squad Leader] Entry Substation ID: ${GUILD_ENTRY_SUBSTATION_ID}"
-SUBSTATION_LOAD=`echo ${SUBSTATION_BLOB} | jq -r ".Substation.load"`
-SUBSTATION_ENERGY=`echo ${SUBSTATION_BLOB} | jq -r ".Substation.energy"`
-SUBSTATION_PLAYER_ALLOCATION=`echo ${SUBSTATION_BLOB} | jq -r ".Substation.playerConnectionAllocation"`
- load | capacity | connection_capacity | connection_count
-
-echo "[Substation] Load / Energy: $SUBSTATION_LOAD / $SUBSTATION_ENERGY"
-echo "[Substation] Player Allocation Size: $SUBSTATION_PLAYER_ALLOCATION"
-
-# Start the Monitors
-monitor-role.sh &
-monitor-guild.sh &
-monitor-reactor.sh &
-monitor-substation.sh &
-
-# Build new agents
-squad-growth.sh &
-
-# Manage Squad Members - run squad-member.sh on available
-squad-Manager.sh &
+echo "[Player ${PLAYER_ID}] Beginning Monitoring ROLE_ID(${PLAYER_ROLE_ID})  GUILD_ID(${PLAYER_GUILD_ID}) USERNAME(${PLAYER_USERNAME}) ${PLAYER_ADDRESS}"
 
 while true
 do
-  echo "[Squad Leader] Doin things...."
+  PLAYER_SUBSTATION_ID=$(echo ${PLAYER_BLOB} | jq -r ".substation_id")
+  PLAYER_ORE=$(echo ${PLAYER_BLOB} | jq -r ".ore")
+  PLAYER_LOAD=$(echo ${PLAYER_BLOB} | jq -r ".load")
+  PLAYER_STRUCTS_LOAD=$(echo ${PLAYER_BLOB} | jq -r ".structs_load")
+  PLAYER_CAPACITY=$(echo ${PLAYER_BLOB} | jq -r ".capacity")
+  PLAYER_CONNECTION_CAPACITY=$(echo ${PLAYER_BLOB} | jq -r ".connection_capacity")
+
+  echo "[Player ${PLAYER_ID}] Ore(${PLAYER_ORE}) Capacity(${PLAYER_CAPACITY}) ConnectionCapacity(${PLAYER_CONNECTION_CAPACITY} via ${PLAYER_SUBSTATION_ID}) Load(${PLAYER_LOAD}) StructsLoad(${PLAYER_STRUCTS_LOAD})"
+
   sleep $SLEEPER_LOG
+
+  PLAYER_BLOB=$(psql $DATABASE_URL -c "SELECT to_json(player.*) FROM view.player WHERE player.player_id = '${PLAYER_ID}';" --no-align -t)
 done
