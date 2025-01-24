@@ -19,17 +19,22 @@ while true
 do
   sleep 10
 
-  PLAYER_BLOB=`structsd query structs show-player --address ${PLAYER_ADDRESS} --output json`
+  PLAYER_BLOB=`structsd query structs player ${PLAYER_ID} --output json`
 
   PLANET_ID=`echo ${PLAYER_BLOB} | jq -r ".Player.planetId"`
 
   if  (( PLANET_ID == 0 ))
   then
+
+      echo "Doin a dirty hack to fix offline planet explore bug"
+      structsd tx structs player-update-primary-address $PLAYER_ADDRESS --from $PLAYER_ACCOUNT --yes --gas auto
+      sleep 10
+
       echo "Exploring a Planet..."
       structsd tx structs planet-explore --from $PLAYER_ACCOUNT --yes --gas auto
       sleep 10
 
-      PLAYER_BLOB=`structsd query structs show-player --address ${PLAYER_ADDRESS} --output json`
+      PLAYER_BLOB=`structsd query structs player ${PLAYER_ID} --output json`
       PLANET_ID=`echo ${PLAYER_BLOB} | jq -r ".Player.planetId"`
       echo "[Planet] ID: $PLANET_ID"
   fi
@@ -40,7 +45,7 @@ do
     structsd tx structs struct-build-initiate "Mining Rig" $PLANET_ID 1 --from $PLAYER_ACCOUNT --yes --gas auto
     sleep 10
 
-    PLANET_BLOB=`structsd query structs show-planet ${PLANET_ID} --output json`
+    PLANET_BLOB=`structsd query structs planet ${PLANET_ID} --output json`
     MINE_ID=`echo ${PLANET_BLOB} | jq -r ".Planet.land[1]"`
 
     echo "Trying to Complete Mining Rig #$MINE_ID"
@@ -55,7 +60,7 @@ do
     structsd tx structs struct-build-initiate "Refinery" $PLANET_ID 2 --from $PLAYER_ACCOUNT --yes --gas auto
     sleep 10
 
-    PLANET_BLOB=`structsd query structs show-planet ${PLANET_ID} --output json`
+    PLANET_BLOB=`structsd query structs planet ${PLANET_ID} --output json`
     REFINERY_ID=`echo ${PLANET_BLOB} | jq -r ".Planet.land[2]"`
 
     echo "Trying to Complete Refinery #$REFINERY_ID"
@@ -64,7 +69,7 @@ do
     HAS_MINE=true
   fi
 
-  PLANET_BLOB=`structsd query structs show-planet ${PLANET_ID} --output json`
+  PLANET_BLOB=`structsd query structs planet ${PLANET_ID} --output json`
   PLANET_ORE_REMAINING=`echo ${PLANET_BLOB} | jq -r ".Planet.OreRemaining"`
 
   if (( PLANET_ORE_REMAINING > 0 ))
@@ -78,7 +83,7 @@ do
     sleep 10
   fi
 
-  PLANET_BLOB=`structsd query structs show-planet ${PLANET_ID} --output json`
+  PLANET_BLOB=`structsd query structs planet ${PLANET_ID} --output json`
   PLANET_ORE_STORED=`echo ${PLANET_BLOB} | jq -r ".Planet.OreStored"`
 
   if (( PLANET_ORE_STORED > 0 ))
@@ -92,7 +97,7 @@ do
     sleep 10
   fi
 
-  PLANET_BLOB=`structsd query structs show-planet ${PLANET_ID} --output json`
+  PLANET_BLOB=`structsd query structs planet ${PLANET_ID} --output json`
   PLANET_ORE_STORED=`echo ${PLANET_BLOB} | jq -r ".Planet.OreStored"`
   PLANET_ORE_REMAINING=`echo ${PLANET_BLOB} | jq -r ".Planet.OreRemaining"`
 
@@ -104,7 +109,7 @@ do
         structsd tx structs planet-explore --from $PLAYER_ACCOUNT --yes --gas auto
         sleep 10
 
-        PLAYER_BLOB=`structsd query structs show-player --address ${PLAYER_ADDRESS} --output json`
+        PLAYER_BLOB=`structsd query structs player ${PLAYER_ID} --output json`
         PLANET_ID=`echo ${PLAYER_BLOB} | jq -r ".Player.planetId"`
         echo "[Planet] ID: $PLANET_ID"
 
