@@ -42,7 +42,7 @@ monitor-substation.sh ${GUILD_ENTRY_SUBSTATION_ID} &
 squad-growth.sh ${SQUAD_LEADER_PLAYER_ID} ${SQUAD_LEADER_GUILD_ID} ${GUILD_ENTRY_SUBSTATION_ID} &
 
 # Manage Squad Members - run squad-member.sh on available
-squad-manager.sh &
+squad-manager.sh ${SQUAD_LEADER_PLAYER_ID} ${SQUAD_LEADER_GUILD_ID}  &
 
 # Manage Work
 grunt-manager.sh &
