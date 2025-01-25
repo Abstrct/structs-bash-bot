@@ -39,7 +39,7 @@ monitor-reactor.sh ${GUILD_PRIMARY_REACTOR_ID} &
 monitor-substation.sh ${GUILD_ENTRY_SUBSTATION_ID} &
 
 # Build new agents
-squad-growth.sh &
+squad-growth.sh ${SQUAD_LEADER_GUILD_ID} ${GUILD_ENTRY_SUBSTATION_ID} &
 
 # Manage Squad Members - run squad-member.sh on available
 squad-manager.sh &
